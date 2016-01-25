@@ -9,20 +9,31 @@ from pptx import Presentation
 
 enddate = date.today() - timedelta(1)
 startdate = enddate - timedelta(365)
-ticker = '510050.SH, IVIX.SH'
-data = wu.wsd(ticker, 'close', startdate, enddate)
-# data['return'] = data['close'].pct_change()
-# data['vol_5d'] = pd.rolling_std(data['return'], window = 5) * np.sqrt(240)
-# data['vol_20d'] = pd.rolling_std(data['return'], window = 20) * np.sqrt(240)
 
+sh510050 = wu.wsd('510050.SH', 'close', startdate, enddate)
+sh510050['ret'] = sh510050['close'].pct_change()
+sh510050['vol_10d'] = pd.rolling_std(sh510050['ret'], window = 5) * np.sqrt(240)
+sh510050['vol_20d'] = pd.rolling_std(sh510050['ret'], window = 20) * np.sqrt(240)
+
+ivix = wu.wsd('IVIX.SH', 'close', startdate, enddate) / 100
+
+# pic 1: price vs implied volatility
 plt.figure()
-data.plot(secondary_y = 'IVIX.SH')
+sh510050['close'].plot(label = '50ETF')
+ivix['close'].plot(label = 'IVIX', secondary_y = True)
+plt.legend()
 plt.savefig('D:\\reports\\pic\\1.png')
 
-# pic 2: future basis and index of last 5 trading days, 1 min data
-ticker = '000016.SH,'
+# pic 2: implied vol and rolling 5 day volatility
+plt.figure()
+sh510050['vol_10d'].plot(label = '10 days vol')
+ivix['close'].plot(label = 'implied vol')
+plt.legend()
+plt.savefig('D:\\reports\\pic\\2.png')
 
 
+
+'''
 # create ppt file
 prs = Presentation('D:\\reports\\templet\\templet.pptx')
 
@@ -41,3 +52,4 @@ placeholder = slide.placeholders[1]
 pic = placeholder.insert_picture('D:\\reports\\pic\\1.png')
 
 prs.save('D:\\reports\\ppt\\sample.pptx')
+'''
