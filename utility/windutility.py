@@ -27,21 +27,16 @@ def wsd(tickers, fields, startdate, enddate):
         print 'cannot surrport multiple code with multiple fields'
 
 
-def wss(tickerList, fields):
+def wss(tickers, fields, date):
     if isinstance(tickers,str):
         tickers = tickers.replace(',','').split()
 
     if isinstance(fields,str):
         fields = fields.replace(',','').split()
 
-    if len(tickers) == 1:
-        tmp = w.wsd(tickers, fields, startdate, enddate)
-        return pd.DataFrame(dict(zip(fields, tmp.Data)),index = tmp.Times)
-    elif len(fields) == 1:
-        tmp = w.wsd(tickers, fields, startdate, enddate)
-        return pd.DataFrame(dict(zip(tickers, tmp.Data)),index = tmp.Times)
-    else:
-        print 'cannot surrport multiple code with multiple fields'
+    tmp = w.wss(tickers, fields, 'tradedate = %s'%(date))
+    return pd.DataFrame(dict(zip(tmp.Fields, tmp.Data)),index = tmp.Codes, columns= tmp.Fields)
+
 
 
 def wsi(tickers, fields, startdate, enddate):
@@ -69,5 +64,6 @@ def wsi(tickers, fields, startdate, enddate):
 
 if __name__ == '__main__':
     import utility.windutility as wu
-    data = wu.wsi('150018.SZ, 150019.SZ', 'close',"2016-01-25 09:00:00", "2016-01-25 10:37:00" )
+    # data = wu.wsi('150018.SZ, 150019.SZ', 'close',"2016-01-25 09:00:00", "2016-01-25 10:37:00" )
+    wu.wss("000006.SZ,000002.SZ", "trade_status,high",'2016-1-16')
     print(data)
