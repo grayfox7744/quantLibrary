@@ -5,18 +5,18 @@ import utility.windutility as wu
 import pandas as pd
 import numpy as np
 
-date = '2016-1-27'
-asset_dif = -6096025.54
+date = '2016-1-28'
+asset_dif = -670671
 target_pos = 0.945
 # check 日期文件
 
-tmp = pd.read_excel(u'M:\\INDEX\\399673\\gbtp_399673_20160126.xlsx')
+tmp = pd.read_excel(u'M:\\INDEX\\399673\\zqz_399673_20160128.xlsx')
 codes = tmp['ZQDM']
 # transform
 rawTicker = ['%06.0f' % code for code in codes]
 tmp['tickers'] = pd.Series([i + '.SH' if i[0] in {'5','6'} else i + '.SZ' for i in rawTicker])
-tmp['share'] = tmp['JRLTGS']
-tmp['price'] = tmp['JRKP']
+tmp['share'] = tmp['ZRLTGS']
+tmp['price'] = tmp['ZRSP']
 tmp['weight'] =tmp.share * tmp.price /sum(tmp.share * tmp.price)
 index = tmp[['tickers', 'weight', 'price']]
 

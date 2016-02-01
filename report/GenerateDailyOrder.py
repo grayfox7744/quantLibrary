@@ -6,11 +6,11 @@ import pandas as pd
 import numpy as np
 
 date = '2016-1-27'
-asset_dif = 395343
+asset_dif = 260172
 target_pos = 0.945
 # check 日期文件
 
-tmp = pd.read_excel(u'M:\\分级基金\\沪深300\\000300weightnextday20160126.xls')
+tmp = pd.read_excel(u'M:\\分级基金\\沪深300\\000300weightnextday20160128.xls')
 codes = tmp[u'成分券代码\nConstituent Code']
 # transform
 rawTicker = ['%06.0f' % code for code in codes]
