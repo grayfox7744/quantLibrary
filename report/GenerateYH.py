@@ -11,21 +11,20 @@ asset_dif = input('sub&red amount:')
 target_pos = input('target position:')
 # check 日期文件
 datestr = enddate.strftime('%Y%m%d')
-filename = 'M:\\INDEX\\399673\\zqz_399673_' + datestr + '.xlsx'
-
+filename = u'M:\\INDEX\\399986\\399986closeweight'+datestr + '\\' + '399986closeweight'+datestr +'.xls'
 tmp = pd.read_excel(filename)
-codes = tmp['ZQDM']
-# transform, should write a function
+
+codes = tmp[u'成分券代码\nConstituent Code']
+# transform
 rawTicker = ['%06.0f' % code for code in codes]
 tmp['tickers'] = pd.Series([i + '.SH' if i[0] in {'5','6'} else i + '.SZ' for i in rawTicker])
-tmp['share'] = tmp['ZRLTGS']
-tmp['price'] = tmp['ZRSP']
-tmp['weight'] =tmp.share * tmp.price /sum(tmp.share * tmp.price)
+tmp['weight'] = tmp[u'权重(%)\nWeight(%)']
+tmp['price'] = tmp[u'收盘\nClose']
 index = tmp[['tickers', 'weight', 'price']]
 
 
 # step2: 读入持仓文件
-tmp = pd.read_excel(u'M:\\分级基金\\创业板50\\综合信息查询_基金证券.xls')
+tmp = pd.read_excel(u'M:\\分级基金\\银行\\综合信息查询_基金证券.xls')
 tmp = tmp[:-1]
 codes = tmp[u'证券代码']
 rawTicker = ['%06.0f' % code for code in codes]
@@ -54,8 +53,8 @@ float = data[data['TRADE_STATUS'] == u'交易']
 float_value = float['mv'].sum()
 float_target_value = float_value + equity_dif
 
-float['targetmv'] = float_target_value * float['weight'] / float['weight'].sum()
-float['position_diff'] = (float['targetmv'] - float['mv']) / float['price']
+float['targetPosition'] = float_target_value * float['weight'] / float['weight'].sum() / float['price']
+float['position_diff'] = float['targetPosition'] - float['position']
 float['volumn'] = np.round(float['position_diff'] / 100) * 100
 # 生成交易单
 
@@ -72,6 +71,5 @@ tmp1 = np.transpose(tmp)
 tmp2 = pd.DataFrame(tmp1, columns = ['ticker', 'direction', 'amount', 'mode1','mode2', 'mktcode'])
 order = tmp2[tmp2['amount'] != '0.0']
 
-orderfile = u'M:\\分级基金\\创业板50\\' + datestr + '.xlsx'
+orderfile = u'M:\\分级基金\\银行\\' + datestr + '.xlsx'
 order.to_excel(orderfile, index = False)
-

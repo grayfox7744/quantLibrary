@@ -4,13 +4,16 @@
 import utility.windutility as wu
 import pandas as pd
 import numpy as np
+from datetime import date, timedelta
 
-date = '2016-1-27'
-asset_dif = 260172
-target_pos = 0.945
+enddate = date.today() - timedelta(1) # should be last trading day
+asset_dif = input('sub&red amount:')
+target_pos = input('target position:')
 # check 日期文件
+datestr = enddate.strftime('%Y%m%d')
+filename = u'M:\\INDEX\\000300\\000300weightnextday'+datestr + '\\' + '000300weightnextday'+datestr +'.xls'
+tmp = pd.read_excel(filename)
 
-tmp = pd.read_excel(u'M:\\分级基金\\沪深300\\000300weightnextday20160128.xls')
 codes = tmp[u'成分券代码\nConstituent Code']
 # transform
 rawTicker = ['%06.0f' % code for code in codes]
@@ -34,7 +37,7 @@ equity = tmp[u'市值'].sum()
 position = tmp[u'市值比净值(%)'].sum()
 
 # step3: 检查是否停牌
-status = wu.wss(list(holdings['tickers']), 'trade_status', date)
+status = wu.wss(list(holdings['tickers']), 'trade_status', enddate)
 tmp =  pd.merge(holdings, status, left_on = 'tickers', right_index = True)
 data = pd.merge(tmp, index)
 
@@ -68,4 +71,5 @@ tmp1 = np.transpose(tmp)
 tmp2 = pd.DataFrame(tmp1, columns = ['ticker', 'direction', 'amount', 'mode1','mode2', 'mktcode'])
 order = tmp2[tmp2['amount'] != '0.0']
 
-order.to_excel(u'M:\\分级基金\\沪深300\\order.xlsx', index = False)
+orderfile = u'M:\\分级基金\\沪深300\\' + datestr + '.xlsx'
+order.to_excel(orderfile, index = False)

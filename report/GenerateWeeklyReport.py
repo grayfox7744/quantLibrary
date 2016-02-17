@@ -8,8 +8,8 @@ from pptx import Presentation
 
 # tracking 50ETF historical volatility and implied volatility
 
-enddate = date.today() - timedelta(1)
-startdate = enddate - timedelta(365)
+enddate = date.today() - timedelta(2)
+startdate = enddate - timedelta(60)
 
 sh510050 = wu.wsd('000016.SH', 'close', startdate, enddate)
 sh510050['ret'] = sh510050['close'].pct_change()
