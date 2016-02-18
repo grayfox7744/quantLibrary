@@ -10,7 +10,7 @@ from WindPy import w
 
 w.start()
 
-def wsd(tickers, fields, startdate, enddate):
+def wsd(tickers, fields, startdate, enddate, cfg=""):
     if isinstance(tickers,str):
         tickers = tickers.replace(',','').split()
 
@@ -18,10 +18,10 @@ def wsd(tickers, fields, startdate, enddate):
         fields = fields.replace(',','').split()
 
     if len(tickers) == 1:
-        tmp = w.wsd(tickers, fields, startdate, enddate)
+        tmp = w.wsd(tickers, fields, startdate, enddate, cfg)
         return pd.DataFrame(dict(zip(fields, tmp.Data)),index = tmp.Times)
     elif len(fields) == 1:
-        tmp = w.wsd(tickers, fields, startdate, enddate)
+        tmp = w.wsd(tickers, fields, startdate, enddate, cfg)
         return pd.DataFrame(dict(zip(tickers, tmp.Data)),index = tmp.Times)
     else:
         print 'cannot surrport multiple code with multiple fields'
