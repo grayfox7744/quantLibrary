@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from datetime import date, timedelta
 
+today = date.today()
 enddate = date.today() - timedelta(1) # should be last trading day
 asset_dif = input('sub&red amount:')
 target_pos = input('target position:')
@@ -37,7 +38,7 @@ equity = tmp[u'市值'].sum()
 position = tmp[u'市值比净值(%)'].sum()
 
 # step3: 检查是否停牌
-status = wu.wss(list(holdings['tickers']), 'trade_status', enddate)
+status = wu.wss(list(holdings['tickers']), 'trade_status', today)
 tmp =  pd.merge(holdings, status, left_on = 'tickers', right_index = True)
 data = pd.merge(tmp, index)
 
