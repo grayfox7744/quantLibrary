@@ -62,6 +62,10 @@ def wsi(tickers, fields, startdate, enddate):
     else:
         print 'cannot surrport multiple code with multiple fields'
 
+def tdaysoffset(n, date):
+    tmp =  w.tdaysoffset(n, date)
+    return tmp.Data[0][0]
+
 if __name__ == '__main__':
     import utility.windutility as wu
     # data = wu.wsi('150018.SZ, 150019.SZ', 'close',"2016-01-25 09:00:00", "2016-01-25 10:37:00" )

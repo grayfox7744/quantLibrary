@@ -8,8 +8,9 @@ from pptx import Presentation
 
 # tracking 50ETF historical volatility and implied volatility
 
-enddate = date.today() - timedelta(2)
+enddate = wu.tdaysoffset(-1, date.today())
 startdate = enddate - timedelta(60)
+firstdate = date(2015,12,31)
 
 sh510050 = wu.wsd('000016.SH', 'close', startdate, enddate)
 sh510050['ret'] = sh510050['close'].pct_change()
@@ -32,6 +33,7 @@ ivix['close'].plot(label = 'implied vol')
 plt.legend()
 plt.savefig('D:\\reports\\pic\\2.png')
 
+# performance of all assets
 
 
 
@@ -62,3 +64,8 @@ placeholder = slide.placeholders[1]
 pic = placeholder.insert_picture('D:\\reports\\pic\\2.png')
 
 prs.save('D:\\reports\\ppt\\sample.pptx')
+
+
+# assets performance
+assetsList = ['000001.SH', 'SP500.SPI']
+assetsClose = wu.wsd(assetsList, 'close', firstdate, enddate)
