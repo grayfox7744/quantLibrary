@@ -2,6 +2,7 @@ import pandas as pd
 from pandas.tseries.offsets import MonthBegin
 from datetime import datetime
 import utility.windutility as wu
+import matplotlib.pyplot as plt
 
 fromDate = raw_input('input fromDate date:')
 toDate = raw_input('input toDate date:')
@@ -31,4 +32,8 @@ icStructure2 = (icClose2.CLOSE - ic2) / ic2
 
 icStructure = pd.DataFrame([icStructure1,icStructure2],index = [fromDate, toDate])
 tmp = icStructure.transpose()
+
+
+plt.figure()
 tmp.plot()
+plt.savefig('D:\\reports\\pic\\3.png')
