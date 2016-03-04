@@ -7,12 +7,12 @@ import numpy as np
 from datetime import date, timedelta
 
 today = date.today()
-enddate = date.today() - timedelta(3) # should be last trading day
+enddate = date.today() - timedelta(1) # should be last trading day
 asset_dif = input('sub&red amount:')
 target_pos = input('target position:')
 # check 日期文件
 datestr = enddate.strftime('%Y%m%d')
-filename = 'M:\\INDEX\\399673\\zqz_399673_' + datestr + '.xlsx'
+filename = 'M:\\INDEX\\399673\\gbtp_399673_' + datestr + '.xlsx'
 
 tmp = pd.read_excel(filename)
 codes = tmp['ZQDM']
