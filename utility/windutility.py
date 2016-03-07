@@ -71,3 +71,9 @@ if __name__ == '__main__':
     # data = wu.wsi('150018.SZ, 150019.SZ', 'close',"2016-01-25 09:00:00", "2016-01-25 10:37:00" )
     wu.wss("000006.SZ,000002.SZ", "trade_status,high",'2016-1-16')
     print(data)
+
+
+def edb(code,startdate, enddate,name):
+        tmp = w.edb(code,  startdate, enddate)
+        return pd.DataFrame(dict(zip([name], tmp.Data)),index = tmp.Times)
+
