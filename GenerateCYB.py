@@ -5,22 +5,25 @@ import utility.windutility as wu
 import pandas as pd
 import numpy as np
 from datetime import date, timedelta
+import glob
+
 
 today = date.today()
-enddate = date.today() - timedelta(3) # should be last trading day
+enddate = date.today() - timedelta(1) # should be last trading day
 asset_dif = input('sub&red amount:')
 target_pos = input('target position:')
 # check 日期文件
 datestr = enddate.strftime('%Y%m%d')
-filename = 'M:\\INDEX\\399673\\gbtp_399673_' + datestr + '.xlsx'
+stmt = ("M://INDEX//399673//*%s*.xlsx") % (datestr)
+filename = glob.glob("M://INDEX//399673//*20160307*.xlsx")
 
-tmp = pd.read_excel(filename)
-codes = tmp['ZQDM']
+tmp = pd.read_excel(filename[0])
+codes = tmp.iloc[:,1]
 # transform, should write a function
 rawTicker = ['%06.0f' % code for code in codes]
 tmp['tickers'] = pd.Series([i + '.SH' if i[0] in {'5','6'} else i + '.SZ' for i in rawTicker])
-tmp['share'] = tmp['JRLTGS']
-tmp['price'] = tmp['JRKP']
+tmp['share'] = tmp.iloc[:,4]
+tmp['price'] = tmp.iloc[:,3]
 tmp['weight'] =tmp.share * tmp.price /sum(tmp.share * tmp.price)
 index = tmp[['tickers', 'weight', 'price']]
 

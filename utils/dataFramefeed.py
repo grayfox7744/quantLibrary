@@ -88,7 +88,7 @@ class RowParser(dataFrameBarfeed.RowParser):
         high = float(row[1]['high'])
         low = float(row[1]['low'])
         volume = float(row[1]['volume'])
-        adjClose = float(row[1][5])
+        adjClose = float(row[1]['close']) * float(row[1]['adjfactor'])
         
         if self.__sanitize:
             open_, high, low, close = common.sanitize_ohlc(open_, high, low, close)
