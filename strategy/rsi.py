@@ -18,8 +18,8 @@ class RSIReversal(strategy.BacktestingStrategy):
         self.__prices = feed[instrument].getPriceDataSeries()
         self.__position = None
         self.__rsiPeriod = int(rsiPeriod)
-        # self.__rsi = indicator.RSI(self.__prices, self.__rsiPeriod)
-        self.__rsi = rsi.RSI(self.__prices, self.__rsiPeriod)
+        self.__rsi = indicator.RSI(self.__prices, self.__rsiPeriod)
+        #self.__rsi = rsi.RSI(self.__prices, self.__rsiPeriod)
 
     def getRSI(self):
         return self.__rsi

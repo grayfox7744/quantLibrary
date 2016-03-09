@@ -17,6 +17,7 @@ from pyalgotrade import strategy
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
 from utility import dataframefeed
+from pyalgotrade.talibext import indicator
 
 class DoubleMA(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, n, m):
@@ -29,9 +30,10 @@ class DoubleMA(strategy.BacktestingStrategy):
         self.__malength1 = int(n)
         self.__malength2 = int(m)
         
-        self.__ma1 = ma.SMA(self.__prices, self.__malength1)
-        self.__ma2 = ma.SMA(self.__prices, self.__malength2)
-        
+        # self.__ma1 = ma.SMA(self.__prices, self.__malength1)
+        # self.__ma2 = ma.SMA(self.__prices, self.__malength2)
+
+
     def getPrice(self):
         return self.__prices
 
@@ -53,7 +55,10 @@ class DoubleMA(strategy.BacktestingStrategy):
 
     def onBars(self, bars):
         # If a position was not opened, check if we should enter a long position.
-        
+        closeDs = self.getFeed().getDataSeries(instrument).getCloseDataSeries()
+        self.__ma1 = indicator.MA(closeDs, 40, self.__malength1)
+        self.__ma2 = indicator.MA(closeDs, 40, self.__malength2)
+
         if self.__ma2[-1]is None:
             return 
             
