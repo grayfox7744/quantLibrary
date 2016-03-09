@@ -16,8 +16,7 @@ from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade import strategy
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
-from pyalgotrade.barfeed import dataframefeed
-import pandas as pd
+from utility import dataframefeed
 
 class DoubleMA(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, n, m):
@@ -97,7 +96,7 @@ if __name__ == "__main__":
     barfeed.setDateTimeFormat('%Y-%m-%d %H:%M:%S')
     barfeed.addBarsFromCSV(instrument, filepath)
     '''
-    import windutility as wu
+    import utility.windutility as wu
     
     dat = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
     dat['adjclose'] = dat['close'] * dat['adjfactor'] / dat['adjfactor'][-1]
