@@ -72,6 +72,8 @@ if __name__ == "__main__":
 
     strat = strat(feed, instrument, *paras)
 
+
+
     if plot:
         plt = plotter.StrategyPlotter(strat, True, True, True)
         ma = strat.getMA()
