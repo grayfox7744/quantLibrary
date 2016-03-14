@@ -84,16 +84,16 @@ if __name__ == "__main__":
     frequency = bar.Frequency.DAY
     paras = [5, 20]
     plot = True
-    
-    #############################################path set ############################33 
+
+    #############################################path set ############################33
     if frequency == bar.Frequency.MINUTE:
         path = "..\\histdata\\min\\"
     elif frequency == bar.Frequency.DAY:
         path = "..\\histdata\\day\\"
     filepath = path + instrument + market + ".csv"
-    
-    
-    #############################################don't change ############################33  
+
+
+    #############################################don't change ############################33
     from pyalgotrade.barfeed.csvfeed import GenericBarFeed
 
     '''
