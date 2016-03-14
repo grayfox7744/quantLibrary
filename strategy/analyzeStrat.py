@@ -7,7 +7,7 @@ from pyalgotrade.stratanalyzer import sharpe
 
 instrument = '000001.SH'
 fromDate = '20000101'
-toDate = '20160311'
+toDate = '20121109'
 frequency = bar.Frequency.DAY
 paras = 20
 plot = True
