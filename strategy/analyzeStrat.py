@@ -2,8 +2,8 @@ from pyalgotrade import bar, plotter
 import utility.windutility as wu
 from utility import dataframefeed
 from strategy import SingleMA
-from pyalgotrade.stratanalyzer import drawdown
-from pyalgotrade.stratanalyzer import sharpe
+from pyalgotrade.stratanalyzer import drawdown, sharpe, returns
+
 
 instrument = '000001.SH'
 fromDate = '20000101'
@@ -20,6 +20,8 @@ feed.addBarsFromDataFrame(instrument, dat)
 strat = SingleMA.SingleMA(feed, instrument, paras)
 
 # attach analyzers
+returnsAnalyzer = returns.Returns()
+strat.attachAnalyzer(returnsAnalyzer)
 drawdownAnalyzer = drawdown.DrawDown()
 strat.attachAnalyzer(drawdownAnalyzer)
 sharpeRatioAnalyzer = sharpe.SharpeRatio()
@@ -29,8 +31,7 @@ if plot:
     plt = plotter.StrategyPlotter(strat, True, True, True)
     ma = strat.getMA()
     plt.getInstrumentSubplot('indicator').addDataSeries('ma', ma)
-    # price = strat.getPrice()
-    # plt.getInstrumentSubplot('price').addDataSeries('price', price)
+    plt.getOrCreateSubplot("returns").addDataSeries("simple return", returnsAnalyzer.getCumulativeReturns())
 
 strat.run()
 

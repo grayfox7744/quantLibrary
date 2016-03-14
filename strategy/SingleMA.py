@@ -23,7 +23,13 @@ class SingleMA(strategy.BacktestingStrategy):
     def onEnterCanceled(self, position):
         self.__position = None
 
+    def onEnterOk(self, position):
+        execInfo = position.getEntryOrder().getExecutionInfo()
+        self.info("BUY at $%.2f" % (execInfo.getPrice()))
+
     def onExitOk(self, position):
+        execInfo = position.getExitOrder().getExecutionInfo()
+        self.info("SELL at $%.2f" % (execInfo.getPrice()))
         self.__position = None
 
     def onExitCancelled(self, position):
@@ -39,13 +45,11 @@ class SingleMA(strategy.BacktestingStrategy):
         if self.__position is not None:
             if not self.__position.exitActive() and closePrice < self.__ma[-1]:
                 self.__position.exitMarket()
-                print ('sell instrument at %d at %s') % (bars[self.__instrument].getPrice(), bars[self.__instrument].getDateTime())
 
         if self.__position is None:
             if closePrice > self.__ma[-1]:
                 shares = int(self.getBroker().getEquity() * 0.9 / bars[self.__instrument].getPrice())
                 self.__position = self.enterLong(self.__instrument, shares)
-                print ('buy instrument at %d at %s') % (bars[self.__instrument].getPrice(), bars[self.__instrument].getDateTime())
 
 
 if __name__ == "__main__":
