@@ -5,9 +5,9 @@ from strategy import SingleMA
 from pyalgotrade.stratanalyzer import drawdown, sharpe, returns, trades
 import pandas as pd
 
-instrument = 'CU.SHF'
-fromDate = '20000730'
-toDate = '20121109'
+instrument = '801780.SI'
+fromDate = '20130730'
+toDate = '20160314'
 frequency = bar.Frequency.DAY
 initialCash = 10000000
 plot = False
@@ -20,7 +20,7 @@ def run_strategy(paras):
     feed.addBarsFromDataFrame(instrument, dat)
     strat = SingleMA.SingleMA(feed, instrument, paras, initialCash)
 
-# attach analyzers
+# attach analyzersgc
     returnsAnalyzer = returns.Returns()
     strat.attachAnalyzer(returnsAnalyzer)
     drawdownAnalyzer = drawdown.DrawDown()
