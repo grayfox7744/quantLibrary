@@ -4,8 +4,8 @@ from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.technical import ma
 
 class SingleMA(strategy.BacktestingStrategy):
-    def __init__(self, feed, instrument, n):
-        strategy.BacktestingStrategy.__init__(self, feed)
+    def __init__(self, feed, instrument, n, initialCash):
+        strategy.BacktestingStrategy.__init__(self, feed, initialCash)
         self.__instrument = instrument
         self.getBroker().setFillStrategy(DefaultStrategy(None))
         self.getBroker().setCommission(TradePercentage(0.001))
