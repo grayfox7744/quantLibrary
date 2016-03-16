@@ -1,16 +1,16 @@
-from pyalgotrade import bar, plotter
+from pyalgotrade import bar
 import utility.windutility as wu
 from utility import dataframefeed
-from strategy import SingleMA
+from strategy import singleMA
 from pyalgotrade.stratanalyzer import drawdown, sharpe, returns, trades
 import pandas as pd
 
-instrument = '801780.SI'
-fromDate = '20130730'
+instrument = '000001.SH'
+fromDate = '20000101'
 toDate = '20160314'
 frequency = bar.Frequency.DAY
-initialCash = 10000000
-plot = False
+initialCash = 1000000
+filepath = 'D://strategyResults//timing//ma//test5.csv'
 
 dat = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
 dat['adjclose'] = dat['close'] * dat['adjfactor'] / dat['adjfactor'][-1]
@@ -18,9 +18,9 @@ dat['adjclose'] = dat['close'] * dat['adjfactor'] / dat['adjfactor'][-1]
 def run_strategy(paras):
     feed = dataframefeed.Feed()
     feed.addBarsFromDataFrame(instrument, dat)
-    strat = SingleMA.SingleMA(feed, instrument, paras, initialCash)
+    strat = singleMA.SingleMA(feed, instrument, paras, initialCash)
 
-# attach analyzersgc
+    # attach analyzersgc
     returnsAnalyzer = returns.Returns()
     strat.attachAnalyzer(returnsAnalyzer)
     drawdownAnalyzer = drawdown.DrawDown()
@@ -32,26 +32,27 @@ def run_strategy(paras):
 
     strat.run()
     print "Final portfolio value: $%.2f with paras %d" % (strat.getBroker().getEquity(), paras)
-    return {'returns':strat.getBroker().getEquity(), 'drawdown':drawdownAnalyzer.getMaxDrawDown(),'sr':sharpeRatioAnalyzer.getSharpeRatio(0.03),
-            'total trades': tradeAnalyzer.getCount(),'win':tradeAnalyzer.getProfitableCount(), 'lose': tradeAnalyzer.getUnprofitableCount(),
-            'average win profit': tradeAnalyzer.getPositiveReturns().mean(), 'average lose loss': tradeAnalyzer.getNegativeReturns().mean()}
+    return {
+        'returns': returnsAnalyzer.getCumulativeReturns()[-1],
+        'drawdown': drawdownAnalyzer.getMaxDrawDown(),
+        'longestDrawDownDuration': drawdownAnalyzer.getLongestDrawDownDuration(),
+        'sr': sharpeRatioAnalyzer.getSharpeRatio(0.03),
+        'total trades': tradeAnalyzer.getCount(),
+        'win': tradeAnalyzer.getProfitableCount(),
+        'lose': tradeAnalyzer.getUnprofitableCount(),
+        'average win profit': tradeAnalyzer.getPositiveReturns().mean(),
+        'average lose loss': tradeAnalyzer.getNegativeReturns().mean(),
+        'wining ratio': tradeAnalyzer.getProfitableCount() / tradeAnalyzer.getCount(),
+        'odds': -tradeAnalyzer.getPositiveReturns().mean() / tradeAnalyzer.getNegativeReturns().mean()
+    }
 
-    '''
-    if plot:
-         plt = plotter.StrategyPlotter(strat, True, True, True)
-         ma = strat.getMA()
-          plt.getInstrumentSubplot('15indicator').addDataSeries('ma', ma)
-          plt.getOrCreateSubplot("returns").addDataSeries("simple return", returnsAnalyzer.getCumulativeReturns())
-    '''
 
 finalPortfolio = {}
-for i in range(10,30):
+for i in range(10,250,5):
     output = run_strategy(i)
     finalPortfolio[i] = output
 
 df = pd.DataFrame(finalPortfolio)
-print df
-df.to_csv('D://strategyResults//timing//ma//test4.csv')
+df1 = df.transpose()
+df1.to_csv(filepath)
 
-# print "Max drawdown: %.2f%%" % (drawdownAnalyzer.getMaxDrawDown() * 100)
-# print "Sharpe ratio: %.2f" % (sharpeRatioAnalyzer.getSharpeRatio(0.03))

@@ -4,7 +4,7 @@ from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.technical import ma
 
 class SingleMA(strategy.BacktestingStrategy):
-    def __init__(self, feed, instrument, n, initialCash):
+    def __init__(self, feed, instrument, n, initialCash = 1000000):
         strategy.BacktestingStrategy.__init__(self, feed, initialCash)
         self.__instrument = instrument
         self.getBroker().setFillStrategy(DefaultStrategy(None))
