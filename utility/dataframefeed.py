@@ -25,7 +25,11 @@ class Feed(membf.BarFeed):
             low = row[1]['low']
             close = row[1]['close']
             volume = row[1]['volume']
-            adjclose = row[1]['adjclose']
+            try:
+                adjclose = row[1]['adjclose']
+            except KeyError:
+                adjclose = None
+
             bar_ = bar.BasicBar(dateTime, open_, high, low, close, volume, adjclose, self._BaseBarFeed__frequency)
             loadedBars.append(bar_)
             

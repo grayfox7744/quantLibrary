@@ -2,6 +2,7 @@ from pyalgotrade import strategy
 from pyalgotrade.broker.fillstrategy import DefaultStrategy
 from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.technical import ma
+from pyalgotrade.dataseries import SequenceDataSeries
 
 class SingleMA(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, n, initialCash = 1000000):
@@ -13,6 +14,7 @@ class SingleMA(strategy.BacktestingStrategy):
         self.__prices = feed[instrument].getPriceDataSeries()
         self.__malength = int(n)
         self.__ma = ma.SMA(self.__prices, self.__malength)
+        self.__pos = SequenceDataSeries() # record signal
 
     def getPrice(self):
         return self.__prices
@@ -20,16 +22,27 @@ class SingleMA(strategy.BacktestingStrategy):
     def getMA(self):
         return self.__ma
 
+    def testCon(self):
+        if self.__position is not None:
+            self.__pos.append(1)
+        elif self.__position is None:
+            self.__pos.append(0)
+
+    def getPos(self):
+        return self.__pos
+
     def onEnterCanceled(self, position):
         self.__position = None
 
     def onEnterOk(self, position):
         execInfo = position.getEntryOrder().getExecutionInfo()
-        self.info("BUY at $%.2f" % (execInfo.getPrice()))
+        instrumentInfo = position.getInstrument()
+        self.info("BUY %s at $%.2f" % (instrumentInfo, execInfo.getPrice()))
 
     def onExitOk(self, position):
         execInfo = position.getExitOrder().getExecutionInfo()
-        self.info("SELL at $%.2f" % (execInfo.getPrice()))
+        instrumentInfo = position.getInstrument()
+        self.info("SELL %s at $%.2f" % (instrumentInfo, execInfo.getPrice()))
         self.__position = None
 
     def onExitCancelled(self, position):
@@ -42,13 +55,15 @@ class SingleMA(strategy.BacktestingStrategy):
         if self.__ma[-1] is None:
             return
 
+        self.testCon()
+
         if self.__position is not None:
             if not self.__position.exitActive() and closePrice < self.__ma[-1]:
                 self.__position.exitMarket()
 
         if self.__position is None:
             if closePrice > self.__ma[-1]:
-                shares = int(self.getBroker().getEquity() * 0.9 / bars[self.__instrument].getPrice())
+                shares = int(self.getBroker().getEquity() * 0.9 / closePrice)
                 self.__position = self.enterLong(self.__instrument, shares)
 
 
@@ -56,30 +71,35 @@ if __name__ == "__main__":
     from pyalgotrade import bar, plotter
     import utility.windutility as wu
     from utility import dataframefeed
+    from pyalgotrade.stratanalyzer import returns
 
     strat = SingleMA
     instrument = '000001.SH'
-    fromDate = '20000101'
+    fromDate = '20130101'
     toDate = '20160311'
     frequency = bar.Frequency.DAY
     paras = [20]
     plot = True
 
-    dat = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
-    dat['adjclose'] = dat['close'] * dat['adjfactor'] / dat['adjfactor'][-1]
+    data = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
+    data['adjclose'] = data['close'] * data['adjfactor'] / data['adjfactor'][-1]
     feed = dataframefeed.Feed()
-    feed.addBarsFromDataFrame(instrument, dat)
+    feed.addBarsFromDataFrame(instrument, data)
 
     strat = strat(feed, instrument, *paras)
 
-
+    returnsAnalyzer = returns.Returns()
+    strat.attachAnalyzer(returnsAnalyzer)
 
     if plot:
-        plt = plotter.StrategyPlotter(strat, True, True, True)
-        ma = strat.getMA()
-        plt.getInstrumentSubplot('indicator').addDataSeries('ma', ma)
-        # price = strat.getPrice()
-        # plt.getInstrumentSubplot('price').addDataSeries('price', price)
+        # plt = plotter.StrategyPlotter(strat, True, True, True)
+        # ma = strat.getMA()
+        # plt.getInstrumentSubplot('indicator').addDataSeries('ma', ma)
+        plt = plotter.StrategyPlotter(strat)
+        plt.getInstrumentSubplot(instrument).addDataSeries('ma', strat.getMA())
+        plt.getOrCreateSubplot('returns').addDataSeries('simple return', returnsAnalyzer.getReturns())
+        # pos = strat.getPos()
+        # plt.getOrCreateSubplot("position").addDataSeries("position", pos)
 
     strat.run()
 
