@@ -3,6 +3,8 @@ from pyalgotrade.broker.fillstrategy import DefaultStrategy
 from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.technical import ma
 from pyalgotrade.technical import cross
+from pyalgotrade.talibext import indicator
+import numpy as np
 
 class singleMA(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, length, initialCash = 1000000):
@@ -14,8 +16,6 @@ class singleMA(strategy.BacktestingStrategy):
         self.__prices = feed[instrument].getPriceDataSeries()
         self.__malength = int(length)
 
-        self.__ma = ma.SMA(self.__closeD, self.__malength)
-
         self.__datetime = feed[instrument].getDateTimes()
         self.__open = feed[instrument].getOpenDataSeries()
         self.__high = feed[instrument]. getHighDataSeries()
@@ -25,8 +25,8 @@ class singleMA(strategy.BacktestingStrategy):
     def getPrice(self):
         return self.__prices
 
-    def getMA(self):
-        return self.__ma
+    # def getMA(self):
+    #    return self.__ma
 
     def onEnterCanceled(self, position):
         self.__position = None
@@ -41,17 +41,20 @@ class singleMA(strategy.BacktestingStrategy):
         self.__position = None
 
     def onBars(self, bars):
+        self.dayInfo(bars[self.__instrument])
+        self.__ma = np.mean(self.__closeD[-20:])
+        closePrice = bars[self.__instrument].getPrice()
 
-        if self.__ma[-1] is None:
+        if self.__ma is None:
             return
 
         if self.__position is not None:
-            if not self.__position.exitActive() and cross.cross_below(self.__prices, self.__ma):
+            if not self.__position.exitActive() and closePrice < self.__ma:
                 self.__position.exitMarket()
 
         if self.__position is None:
-            if cross.cross_above(self.__prices, self.__ma):
-                shares = int(self.getBroker().getEquity() * 0.2 / bars[self.__instrument].getPrice())
+            if closePrice > self.__ma:
+                shares = int(self.getBroker().getEquity() * 0.9 / bars[self.__instrument].getPrice())
                 self.__position = self.enterLong(self.__instrument, shares)
 
     def dayInfo(self, bar):
@@ -120,7 +123,7 @@ if __name__ == '__main__':
         # ma = strat.getMA()
         # plt.getInstrumentSubplot('indicator').addDataSeries('ma', ma)
         plt = plotter.StrategyPlotter(strat)
-        plt.getInstrumentSubplot(instrument).addDataSeries('ma', strat.getMA())
+        # plt.getInstrumentSubplot(instrument).addDataSeries('ma', strat.getMA())
         plt.getOrCreateSubplot('returns').addDataSeries('simple return', returnsAnalyzer.getReturns())
         # pos = strat.getPos()
         # plt.getOrCreateSubplot("position").addDataSeries("position", pos)
