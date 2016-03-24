@@ -15,7 +15,7 @@ target_pos = input('target position:')
 # check 日期文件
 datestr = enddate.strftime('%Y%m%d')
 stmt = ("M://INDEX//399673//*%s*.xlsx") % (datestr)
-filename = glob.glob("M://INDEX//399673//*20160307*.xlsx")
+filename = glob.glob(stmt)
 
 tmp = pd.read_excel(filename[0])
 codes = tmp.iloc[:,1]
