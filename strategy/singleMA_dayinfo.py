@@ -102,10 +102,10 @@ if __name__ == '__main__':
 
     strat = singleMA
     instrument = '000001.SH'
-    fromDate = '20120318'
-    toDate = '20160317'
+    fromDate = '20160101'
+    toDate = '20160324'
     frequency = bar.Frequency.MINUTE
-    paras = [20]
+    paras = [19]
     plot = True
 
     data = wu.wsi(instrument, 'open, high, low, close, volume', fromDate, toDate)

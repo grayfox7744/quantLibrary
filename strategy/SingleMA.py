@@ -74,11 +74,11 @@ if __name__ == "__main__":
     from pyalgotrade.stratanalyzer import returns
 
     strat = SingleMA
-    instrument = '000001.SH'
-    fromDate = '20130101'
-    toDate = '20160311'
+    instrument = '801120.SI'
+    fromDate = '20160101'
+    toDate = '20160324'
     frequency = bar.Frequency.DAY
-    paras = [20]
+    paras = [4]
     plot = True
 
     data = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
