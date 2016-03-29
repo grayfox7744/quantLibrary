@@ -1,11 +1,24 @@
 from pyalgotrade import strategy
+from pyalgotrade.broker.fillstrategy import DefaultStrategy
+from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.technical import macd
+from pyalgotrade.dataseries import SequenceDataSeries
+from pyalgotrade.talibext import indicator
 
-class MACD(strategy.BacktestingStrategy)
-    def __init__(self, feed, instrument, fast, slow, signal, maxLen):
-        strategy.BacktestingStrategy.__init__(self, feed)
+class MACD(strategy.BacktestingStrategy):
+    def __init__(self, feed, instrument, fast, slow, signal, initialCash = 1000000):
+        strategy.BacktestingStrategy.__init__(self, feed, initialCash)
         self.__instrument = instrument
-        self.__macd = macd.MACD(feed[instrument],)
+        self.getBroker().setFillStrategy(DefaultStrategy(None))
+        self.getBroker().setCommission(TradePercentage(0.001))
+        self.__position = None
+        self.__prices = feed[instrument].getPriceDataSeries()
+        self.__fast = int(fast)
+        self.__slow = int(slow)
+        self.__signal = int(signal)
+
+    def getPrice(self):
+        return self.__prices
 
     def getMACD(self):
         return self.__macd
@@ -28,16 +41,58 @@ class MACD(strategy.BacktestingStrategy)
         self.__position.exitMarket()
 
     def onBars(self, bars):
-        closePrice = bars[self.__instrument].getPrice()
+        # closePrice = bars[self.__instrument].getPrice()
+        closePrice = self.getFeed().getDataSeries(instrument).getCloseDataSeries()
+        self.__dif, self.__dea, self.__macd = indicator.MACD(closePrice, 50, self.__fast, self.__slow, self.__signal)
+
+
         if self.__macd[-1] is None:
             return
 
         if self.__position is not None:
-            if not self.__position.exitActive() and self.__macd[-1] < self.__macd[-2]:
+            if not self.__position.exitActive() and self.__macd[-1] < 0:
                 self.__position.exitMarket()
 
         if self.__position is None:
-            if self.__macd[-1] > self.__macd[-2]:
-                shares = int(self.getBroker().getEquity() * 0.9 / closePrice)
+            if self.__macd[-1] > 0:
+                shares = int(self.getBroker().getEquity() * 0.9 / bars[self.__instrument].getPrice())
                 self.__position = self.enterLong(self.__instrument, shares)
 
+if __name__ == "__main__":
+    from pyalgotrade import bar, plotter
+    import utility.windutility as wu
+    from utility import dataframefeed
+    from pyalgotrade.stratanalyzer import returns
+
+    strat = MACD
+    instrument = '000001.SH'
+    fromDate = '20090101'
+    toDate = '20160324'
+    frequency = bar.Frequency.DAY
+    paras = [12, 26, 9]
+    plot = True
+
+    data = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
+    data['adjclose'] = data['close'] * data['adjfactor'] / data['adjfactor'][-1]
+    feed = dataframefeed.Feed()
+    feed.addBarsFromDataFrame(instrument, data)
+
+    strat = strat(feed, instrument, *paras)
+
+    returnsAnalyzer = returns.Returns()
+    strat.attachAnalyzer(returnsAnalyzer)
+
+    if plot:
+        # plt = plotter.StrategyPlotter(strat, True, True, True)
+        # ma = strat.getMA()
+        # plt.getInstrumentSubplot('indicator').addDataSeries('ma', ma)
+        plt = plotter.StrategyPlotter(strat)
+        # plt.getInstrumentSubplot(instrument).addDataSeries('macd', strat.getMACD())
+        plt.getOrCreateSubplot('returns').addDataSeries('simple return', returnsAnalyzer.getReturns())
+        # pos = strat.getPos()
+        # plt.getOrCreateSubplot("position").addDataSeries("position", pos)
+
+    strat.run()
+
+    if plot:
+        plt.plot()
