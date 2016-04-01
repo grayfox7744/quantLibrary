@@ -9,7 +9,7 @@ import glob
 
 
 today = date.today()
-enddate = date.today() - timedelta(1) # should be last trading day
+enddate = date.today() - timedelta(0) # should be last trading day
 asset_dif = input('sub&red amount:')
 target_pos = input('target position:')
 # check 日期文件
