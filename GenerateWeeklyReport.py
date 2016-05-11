@@ -66,6 +66,4 @@ pic = placeholder.insert_picture('D:\\reports\\pic\\2.png')
 prs.save('D:\\reports\\ppt\\sample.pptx')
 
 
-# assets performance
-assetsList = ['000001.SH', 'SP500.SPI']
-assetsClose = wu.wsd(assetsList, 'close', firstdate, enddate)
+#

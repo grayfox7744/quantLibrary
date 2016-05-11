@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from datetime import date, timedelta
 
-enddate = date.today() - timedelta(3) # should be last trading day
+enddate = date.today() - timedelta(4) # should be last trading day
 asset_dif = input('sub&red amount:')
 target_pos = input('target position:')
 # check 日期文件
