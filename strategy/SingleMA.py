@@ -75,8 +75,8 @@ if __name__ == "__main__":
 
     strat = SingleMA
     instrument = '000001.SH'
-    fromDate = '20100101'
-    toDate = '20160331'
+    fromDate = '20131201'
+    toDate = '20160601'
     frequency = bar.Frequency.DAY
     paras = [20]
     plot = True

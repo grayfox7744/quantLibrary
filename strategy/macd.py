@@ -66,14 +66,15 @@ if __name__ == "__main__":
 
     strat = MACD
     instrument = '000001.SH'
-    fromDate = '20090101'
-    toDate = '20160324'
+    fromDate = '20110101'
+    toDate = '20160719'
     frequency = bar.Frequency.DAY
     paras = [12, 26, 9]
     plot = True
 
     data = wu.wsd(instrument, 'open, high, low, close, volume, adjfactor', fromDate, toDate)
     data['adjclose'] = data['close'] * data['adjfactor'] / data['adjfactor'][-1]
+    # data = wu.wsi(instrument, 'open, high, low, close, volume', fromDate, toDate)
     feed = dataframefeed.Feed()
     feed.addBarsFromDataFrame(instrument, data)
 
