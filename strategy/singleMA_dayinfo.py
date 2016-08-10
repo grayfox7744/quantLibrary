@@ -32,12 +32,17 @@ class singleMA(strategy.BacktestingStrategy):
         self.__position = None
 
     def onEnterOk(self, position):
-        pass
+        execInfo = position.getEntryOrder().getExecutionInfo()
+        instrumentInfo = position.getInstrument()
+        self.info("BUY %s at $%.2f" % (instrumentInfo, execInfo.getPrice()))
 
     def onExitCanceled(self, position):
         self.__position.exitMarket()
 
     def onExitOk(self, position):
+        execInfo = position.getExitOrder().getExecutionInfo()
+        instrumentInfo = position.getInstrument()
+        self.info("SELL %s at $%.2f" % (instrumentInfo, execInfo.getPrice()))
         self.__position = None
 
     def onBars(self, bars):
@@ -103,7 +108,7 @@ if __name__ == '__main__':
     strat = singleMA
     instrument = '000001.SH'
     fromDate = '20160101'
-    toDate = '20160324'
+    toDate = '20160727'
     frequency = bar.Frequency.MINUTE
     paras = [19]
     plot = True

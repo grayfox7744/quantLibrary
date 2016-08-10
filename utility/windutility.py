@@ -37,6 +37,15 @@ def wss(tickers, fields, date):
     tmp = w.wss(tickers, fields, 'tradedate = %s'%(date))
     return pd.DataFrame(dict(zip(tmp.Fields, tmp.Data)),index = tmp.Codes, columns= tmp.Fields)
 
+def wsq(tickers, fields):
+    if isinstance(tickers,str):
+        tickers = tickers.replace(',','').split()
+
+    if isinstance(fields,str):
+        fields = fields.replace(',','').split()
+
+    tmp = w.wsq(tickers, fields)
+    return pd.DataFrame(dict(zip(tmp.Fields, tmp.Data)),index = tmp.Codes, columns= tmp.Fields)
 
 
 def wsi(tickers, fields, startdate, enddate):
