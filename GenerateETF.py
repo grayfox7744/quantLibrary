@@ -76,5 +76,5 @@ tmp1 = np.transpose(tmp)
 tmp2 = pd.DataFrame(tmp1, columns = ['ticker', 'direction', 'amount', 'mode1','mode2', 'mktcode'])
 order = tmp2[tmp2['amount'] != '0.0']
 
-orderfile = u'M:\\分级基金\\创业板50\\' + datestr + '.xlsx'
+orderfile = u'M:\\分级基金\\50ETF\\' + datestr + '.xlsx'
 order.to_excel(orderfile, index = False)

@@ -1,9 +1,10 @@
 import utility.windutility as wu
+from datetime import date
+# future daily basis
+beginDate = '2016-12-16'
+endDate = date.today().strftime('%Y-%m-%d')
 
-indexPrice = wu.wsi('000905.SH', 'close', '2016-06-22', '2016-06-23 11:01:00')
-futurePrice = wu.wsi('IC1609.CFE', 'close', '2016-06-22', '2016-06-23 11:01:00')
+indexPrice = wu.wsd('000905.SH', 'close', beginDate, endDate)
+futurePrice = wu.wsd('IC1701.CFE', 'close', beginDate, endDate)
 basis = futurePrice - indexPrice
 # basis.plot()
-futurePrice1 = wu.wsi('IC1607.CFE', 'close', '2016-06-22', '2016-06-23 11:01:00')
-futurebasis = futurePrice - futurePrice1
-futurebasis.plot()
