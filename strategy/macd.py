@@ -4,6 +4,7 @@ from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.technical import macd
 from pyalgotrade.dataseries import SequenceDataSeries
 from pyalgotrade.talibext import indicator
+from datetime import datetime
 
 class MACD(strategy.BacktestingStrategy):
     def __init__(self, feed, instrument, fast, slow, signal, initialCash = 1000000):
@@ -43,7 +44,9 @@ class MACD(strategy.BacktestingStrategy):
     def onBars(self, bars):
         # closePrice = bars[self.__instrument].getPrice()
         closePrice = self.getFeed().getDataSeries(instrument).getCloseDataSeries()
-        self.__dif, self.__dea, self.__macd = indicator.MACD(closePrice, 50, self.__fast, self.__slow, self.__signal)
+        date = bars.getDateTime()
+        
+        self.__dif, self.__dea, self.__macd = indicator.MACD(closePrice, 200, self.__fast, self.__slow, self.__signal)
 
 
         if self.__macd[-1] is None:
@@ -53,7 +56,7 @@ class MACD(strategy.BacktestingStrategy):
             if not self.__position.exitActive() and self.__macd[-1] < 0:
                 self.__position.exitMarket()
 
-        if self.__position is None:
+        if self.__position is None and date >= date1:
             if self.__macd[-1] > 0:
                 shares = int(self.getBroker().getEquity() * 0.9 / bars[self.__instrument].getPrice())
                 self.__position = self.enterLong(self.__instrument, shares)
@@ -66,8 +69,9 @@ if __name__ == "__main__":
 
     strat = MACD
     instrument = '000001.SH'
-    fromDate = '20110101'
-    toDate = '20160719'
+    fromDate = '20150101'
+    toDate = '20161230'
+    date1 = datetime(2016,1,1)
     frequency = bar.Frequency.DAY
     paras = [12, 26, 9]
     plot = True
