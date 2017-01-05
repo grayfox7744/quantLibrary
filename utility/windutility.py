@@ -48,7 +48,7 @@ def wsq(tickers, fields):
     return pd.DataFrame(dict(zip(tmp.Fields, tmp.Data)),index = tmp.Codes, columns= tmp.Fields)
 
 
-def wsi(tickers, fields, startdate, enddate):
+def wsi(tickers, fields, startdate, enddate, cfg=""):
     if isinstance(tickers,str):
         tickers = tickers.replace(',','').split()
 
@@ -56,14 +56,14 @@ def wsi(tickers, fields, startdate, enddate):
         fields = fields.replace(',','').split()
 
     if len(tickers) == 1:
-        tmp = w.wsi(tickers, fields, startdate, enddate)
+        tmp = w.wsi(tickers, fields, startdate, enddate, cfg)
         return pd.DataFrame(dict(zip(fields, tmp.Data)),index = tmp.Times)
     elif len(fields) == 1:
-        tmp = w.wsi(tickers[0], fields, startdate, enddate)
+        tmp = w.wsi(tickers[0], fields, startdate, enddate, cfg)
         df = pd.DataFrame(dict(zip([tickers[0]], tmp.Data)),index = tmp.Times)
 
         for ticker in tickers[1:]:
-            tmp = w.wsi(ticker, fields, startdate, enddate)
+            tmp = w.wsi(ticker, fields, startdate, enddate, cfg)
             df1 = pd.DataFrame(dict(zip([ticker], tmp.Data)),index = tmp.Times)
             df = pd.merge(df, df1, left_index = True, right_index = True)
 
