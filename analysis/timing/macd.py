@@ -49,6 +49,9 @@ class MACD(strategy.BacktestingStrategy):
         self.__dif, self.__dea, self.__macd = indicator.MACD(closePrice, 200, self.__fast, self.__slow, self.__signal)
 
 
+        if date < date1:
+            return
+        
         if self.__macd[-1] is None:
             return
 
@@ -56,7 +59,7 @@ class MACD(strategy.BacktestingStrategy):
             if not self.__position.exitActive() and self.__macd[-1] < 0:
                 self.__position.exitMarket()
 
-        if self.__position is None and date >= date1:
+        if self.__position is None:
             if self.__macd[-1] > 0:
                 shares = int(self.getBroker().getEquity() * 0.9 / bars[self.__instrument].getPrice())
                 self.__position = self.enterLong(self.__instrument, shares)
@@ -65,14 +68,14 @@ if __name__ == "__main__":
     from pyalgotrade import bar, plotter
     import utility.windutility as wu
     from utility import dataframefeed
-    from pyalgotrade.stratanalyzer import returns
+    from pyalgotrade.stratanalyzer import returns, drawdown
 
     strat = MACD
     # instrument = '000001.SH'
-    instrument = '399394.SZ'
-    fromDate = '20150101'
+    instrument = '000300.SH'
+    fromDate = '20040104'
     toDate = '20170105'
-    date1 = datetime(2016,1,1)
+    date1 = datetime(2005,1,1)
     frequency = bar.Frequency.DAY
     paras = [12, 26, 9]
     plot = True
@@ -87,6 +90,9 @@ if __name__ == "__main__":
 
     returnsAnalyzer = returns.Returns()
     strat.attachAnalyzer(returnsAnalyzer)
+    
+    drawDownAnalyzer = drawdown.DrawDown()
+    strat.attachAnalyzer(drawDownAnalyzer)
 
     if plot:
         # plt = plotter.StrategyPlotter(strat, True, True, True)
@@ -99,6 +105,8 @@ if __name__ == "__main__":
         # plt.getOrCreateSubplot("position").addDataSeries("position", pos)
 
     strat.run()
+    
+    print "max draw down: %2.f %%" % (drawDownAnalyzer.getMaxDrawDown() * 100)
 
     if plot:
         plt.plot()
